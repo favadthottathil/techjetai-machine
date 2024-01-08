@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
+import 'package:techjetai/controller/auth_controller.dart';
 import 'package:techjetai/utils/res/colors.dart';
 import 'package:techjetai/utils/res/sizedbox.dart';
 import 'package:techjetai/utils/res/text_styles.dart';
+import 'package:techjetai/view/sign_in_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -14,6 +17,8 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
+    final authController = Provider.of<AuthController>(context, listen: false);
+
     return Scaffold(
       body: SafeArea(
         child: SingleChildScrollView(
@@ -30,7 +35,20 @@ class _HomeScreenState extends State<HomeScreen> {
                         SvgPicture.asset('Assets/locattion_icon.svg'),
                         sizedboxw10,
                         Text('Office', style: AppTextStyle.textStyle1),
-                        SvgPicture.asset('Assets/arrow_down_icon.svg')
+                        SvgPicture.asset('Assets/arrow_down_icon.svg'),
+                        const Spacer(),
+                        IconButton(
+                            onPressed: () => authController.logOut().then((status) {
+                                  if (status == '') {
+                                    Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) => const SignInScreen(),
+                                        ),
+                                        (route) => false);
+                                  }
+                                }),
+                            icon: const Icon(Icons.logout))
                       ],
                     ),
                     Text(
@@ -222,9 +240,15 @@ class CustomTextField extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 20),
       child: TextField(
         decoration: InputDecoration(
-          hintText: 'Search Movies',
-          // hintStyle: AppStyle.poppins14,
-
+          hintText: 'Restaurant name or a dish name....',
+          prefixIcon: Icon(
+            Icons.search,
+            color: AppColors.kOrangeColor,
+          ),
+          suffixIcon: Icon(
+            Icons.filter_alt,
+            color: AppColors.kGreyColor,
+          ),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.all(
               Radius.circular(10),
